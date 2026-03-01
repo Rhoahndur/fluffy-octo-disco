@@ -8,6 +8,7 @@ import { calculateCost } from '@/lib/cost/rsmeans';
 import { findSimilarProjects } from '@/lib/similar/matcher';
 import { findLocationFactor } from '@/lib/cost/data/location-factors';
 import { saveEstimate, isSupabaseConfigured } from '@/lib/db/supabase';
+import { config as llmConfig } from '@/config/llm';
 import type { EstimateRequest, EstimateResponse, LLMAnalysis, CVAnalysis } from '@/types';
 import type { AnalysisContext, CVAnalysisForLLM, PDFExtractionForLLM } from '@/lib/llm/prompts';
 
