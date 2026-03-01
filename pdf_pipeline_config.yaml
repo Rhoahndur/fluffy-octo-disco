@@ -1,0 +1,79 @@
+# ── PDF Pipeline Configuration ────────────────────────────────────────
+
+llm:
+  model: "google/gemini-2.5-flash"
+  temperature: 0.1
+  max_output_tokens: 8192
+
+# Chunking: how to split large PDFs for the LLM
+chunking:
+  max_chars_per_chunk: 280000   # ~70k tokens for Gemini
+  overlap_chars: 2000           # overlap between chunks
+
+# Output
+output:
+  default_path: "results/pdf_extraction_results.json"
+
+# ── Structured fields to extract (Agent 1) ────────────────────────────
+fields:
+  - name: project_name
+    description: "Official project name or title"
+  - name: project_number
+    description: "Official project number, contract number, or bid number"
+  - name: agency
+    description: "Contracting agency or owner organization"
+  - name: location
+    description: "City, county, and state of the project"
+  - name: building_type
+    description: "High-level category: residential, commercial, industrial, institutional, or infrastructure"
+  - name: sub_type
+    description: "More specific building type (e.g., office_midrise, school_elementary, hospital_acute)"
+  - name: area_sf
+    description: "Total building area in square feet (integer or null)"
+  - name: stories
+    description: "Number of floors or stories (integer or null)"
+  - name: year_built
+    description: "Original year the building was constructed (integer or null)"
+  - name: year_renovated
+    description: "Year of renovation if applicable (integer or null)"
+  - name: construction_type
+    description: "new_construction, renovation, addition, tenant_improvement, or demolition"
+  - name: structural_system
+    description: "Primary structural system: steel_frame, concrete, wood_frame, masonry, etc."
+  - name: foundation_type
+    description: "Foundation type: slab_on_grade, pile, spread_footing, mat, etc."
+  - name: roof_type
+    description: "Roof system: flat_membrane, pitched, metal, built_up, etc."
+  - name: facade_material
+    description: "Primary exterior material: brick, curtain_wall, precast, EIFS, stucco, etc."
+  - name: hvac_system
+    description: "Primary HVAC system type: central_air, VRF, split_system, air_handling_units, etc."
+  - name: electrical_service
+    description: "Electrical service details: voltage, amperage, transformer info"
+  - name: fire_protection
+    description: "Fire protection system: wet_sprinkler, dry_sprinkler, fire_alarm, type"
+  - name: ada_compliance
+    description: "Any ADA/accessibility requirements noted (brief description or null)"
+  - name: sustainability
+    description: "LEED certification, green building features, or null"
+  - name: quality_level
+    description: "economy, standard, or premium based on specification quality"
+  - name: estimated_budget
+    description: "Any stated budget, bid amount, or cost estimate in USD (number or null)"
+  - name: contract_duration_days
+    description: "Contract duration in calendar days (integer or null)"
+  - name: csi_divisions_present
+    description: "List of CSI MasterFormat division numbers covered in the spec (e.g. ['01','02','03'])"
+
+# ── Qualitative insight categories (Agent 2) ──────────────────────────
+insight_categories:
+  - scope_summary
+  - complexity_factors
+  - cost_drivers
+  - risk_factors
+  - schedule_constraints
+  - material_quality_signals
+  - regulatory_notes
+  - mep_complexity
+  - site_conditions
+  - phasing_requirements
