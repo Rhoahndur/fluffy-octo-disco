@@ -64,21 +64,14 @@ Example invalid output: The cost is 15000000.
         {"role": "user", "content": [{"type": "text", "text": prompt}] + floor_plan_messages}
     ]
 
-    print(f"Calling OpenRouter (google/gemini-3.0-flash) for project {project_data.get('project_id')}...")
+    print(f"Calling OpenRouter (google/gemini-3-flash-preview) for project {project_data.get('project_id')}...")
     
     # We pass the standard code interpreter plugin tool via OpenRouter's recommended format
     try:
         response = client.chat.completions.create(
-            model="google/gemini-3.0-flash",
+            model="google/gemini-3-flash-preview",
             messages=messages,
-            temperature=0.1,
-            extra_body={
-                "plugins": [
-                    {
-                        "id": "code_interpreter"
-                    }
-                ]
-            }
+            temperature=0.1
         )
         
         # OpenRouter / OpenAI standard extraction
