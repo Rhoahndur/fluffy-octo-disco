@@ -548,3 +548,274 @@ if __name__ == "__main__":
         total = sum(profile.values())
         status = "OK" if abs(total - 1.0) < 0.01 else f"WARN ({total:.3f})"
         print(f"  Profile '{name}': sum={total:.3f} [{status}]")
+
+
+# ─── FUZZY LOCATION FACTOR LOOKUP ─────────────────────────────────────
+# Direct port of findLocationFactor from web/src/lib/cost/data/location-factors.ts
+
+# State-based approximations for when city isn't matched
+_STATE_MAP: Dict[str, str] = {
+    "california": "los_angeles",
+    "ca": "los_angeles",
+    "texas": "dallas",
+    "tx": "dallas",
+    "florida": "miami",
+    "fl": "miami",
+    "illinois": "chicago",
+    "il": "chicago",
+    "pennsylvania": "philadelphia",
+    "pa": "philadelphia",
+    "ohio": "detroit",
+    "georgia": "atlanta",
+    "ga": "atlanta",
+    "arizona": "phoenix",
+    "az": "phoenix",
+    "colorado": "denver",
+    "co": "denver",
+    "washington": "seattle",
+    "wa": "seattle",
+    "oregon": "portland",
+    "or": "portland",
+    "massachusetts": "boston",
+    "ma": "boston",
+    "tennessee": "nashville",
+    "tn": "nashville",
+    "north_carolina": "charlotte",
+    "nc": "charlotte",
+    "nevada": "las_vegas",
+    "nv": "las_vegas",
+    "minnesota": "minneapolis",
+    "mn": "minneapolis",
+    "maryland": "baltimore",
+    "md": "baltimore",
+    "indiana": "indianapolis",
+}
+
+
+def find_location_factor(location_text: str) -> Dict[str, any]:
+    """
+    Find the best matching location factor from free-form text.
+    Direct port of findLocationFactor from location-factors.ts.
+
+    Args:
+        location_text: Free-form location text (e.g., "New York, NY", "california")
+
+    Returns:
+        Dict with 'location' (normalized key) and 'factor' (multiplier)
+    """
+    import re
+    normalized = re.sub(r"[^a-z]", "_", location_text.lower())
+
+    # Direct match
+    if normalized in LOCATION_FACTORS:
+        return {"location": normalized, "factor": LOCATION_FACTORS[normalized]}
+
+    # Partial match
+    for loc, factor in LOCATION_FACTORS.items():
+        if (normalized.replace("_", "") in loc.replace("_", "") or
+                loc.replace("_", "") in normalized.replace("_", "")):
+            return {"location": loc, "factor": factor}
+
+    # State-based approximations
+    for state, city in _STATE_MAP.items():
+        if state in normalized:
+            return {"location": city, "factor": LOCATION_FACTORS[city]}
+
+    # Default to national average
+    return {"location": "national", "factor": 1.0}
+
+
+# ─── ITEM QUANTITY ESTIMATION ─────────────────────────────────────────
+# Direct port of estimateQuantities from web/src/lib/cost/rsmeans.ts
+
+def estimate_quantities(
+    sub_type: str,
+    quality: str,
+    area_sf: float,
+    stories: int,
+    breakdown: Dict[str, float],
+) -> list:
+    """
+    Estimate material quantities based on building type and area.
+    Direct port of estimateQuantities from rsmeans.ts.
+
+    Args:
+        sub_type: Building sub-type key
+        quality: Quality level (low/mid/high)
+        area_sf: Total building area in square feet
+        stories: Number of stories
+        breakdown: CSI division breakdown (division code -> dollar amount)
+
+    Returns:
+        List of ItemQuantity dicts
+    """
+    quantities = []
+    category = SUBTYPE_TO_CATEGORY.get(sub_type, "commercial")
+
+    # Quality multipliers for material quantities
+    quality_multiplier = 1.15 if quality == "high" else (0.85 if quality == "low" else 1.0)
+
+    def _safe_div(numerator, denominator):
+        return round(numerator / denominator, 2) if denominator and denominator != 0 else 0
+
+    # Concrete (Division 03)
+    concrete_yards = round(area_sf * 0.05 * quality_multiplier, 1)
+    quantities.append({
+        "item": "Concrete (foundation & slab)",
+        "quantity": concrete_yards,
+        "unit": "cubic yards",
+        "unit_cost": _safe_div(breakdown.get("03_concrete", 0), concrete_yards),
+        "total_cost": breakdown.get("03_concrete", 0),
+        "division": "03_concrete",
+    })
+
+    # Lumber/Wood (Division 06) - mainly for residential
+    if category == "residential":
+        board_feet = round(area_sf * 12 * quality_multiplier)
+        quantities.append({
+            "item": "Framing lumber",
+            "quantity": board_feet,
+            "unit": "board feet",
+            "unit_cost": _safe_div(breakdown.get("06_wood_plastics_composites", 0), board_feet),
+            "total_cost": breakdown.get("06_wood_plastics_composites", 0),
+            "division": "06_wood_plastics_composites",
+        })
+
+    # Structural steel (Division 05) - mainly for commercial/industrial
+    if category != "residential":
+        steel_tons = round(area_sf * 0.008 * quality_multiplier, 1)
+        quantities.append({
+            "item": "Structural steel",
+            "quantity": steel_tons,
+            "unit": "tons",
+            "unit_cost": _safe_div(breakdown.get("05_metals", 0), steel_tons),
+            "total_cost": breakdown.get("05_metals", 0),
+            "division": "05_metals",
+        })
+
+    # Roofing (Division 07)
+    roofing_sf = round(area_sf / stories * 1.1) if stories > 0 else round(area_sf * 1.1)
+    thermal_cost = breakdown.get("07_thermal_moisture", 0)
+    quantities.append({
+        "item": "Roofing materials",
+        "quantity": roofing_sf,
+        "unit": "sq ft",
+        "unit_cost": _safe_div(thermal_cost * 0.4, roofing_sf),
+        "total_cost": round(thermal_cost * 0.4, 2),
+        "division": "07_thermal_moisture",
+    })
+
+    # Insulation (Division 07)
+    insulation_sf = round(area_sf * 1.5)
+    quantities.append({
+        "item": "Insulation",
+        "quantity": insulation_sf,
+        "unit": "sq ft",
+        "unit_cost": _safe_div(thermal_cost * 0.6, insulation_sf),
+        "total_cost": round(thermal_cost * 0.6, 2),
+        "division": "07_thermal_moisture",
+    })
+
+    # Windows & Doors (Division 08)
+    openings_cost = breakdown.get("08_openings", 0)
+    window_count = round(area_sf / 150 * quality_multiplier)
+    door_count = round(area_sf / 300)
+    quantities.append({
+        "item": "Windows",
+        "quantity": window_count,
+        "unit": "units",
+        "unit_cost": _safe_div(openings_cost * 0.7, window_count),
+        "total_cost": round(openings_cost * 0.7, 2),
+        "division": "08_openings",
+    })
+    quantities.append({
+        "item": "Doors (interior & exterior)",
+        "quantity": door_count,
+        "unit": "units",
+        "unit_cost": _safe_div(openings_cost * 0.3, door_count),
+        "total_cost": round(openings_cost * 0.3, 2),
+        "division": "08_openings",
+    })
+
+    # Drywall (Division 09)
+    finishes_cost = breakdown.get("09_finishes", 0)
+    drywall_sf = round(area_sf * 3.5)
+    quantities.append({
+        "item": "Drywall",
+        "quantity": drywall_sf,
+        "unit": "sq ft",
+        "unit_cost": _safe_div(finishes_cost * 0.3, drywall_sf),
+        "total_cost": round(finishes_cost * 0.3, 2),
+        "division": "09_finishes",
+    })
+
+    # Flooring (Division 09)
+    quantities.append({
+        "item": "Flooring materials",
+        "quantity": area_sf,
+        "unit": "sq ft",
+        "unit_cost": _safe_div(finishes_cost * 0.4, area_sf),
+        "total_cost": round(finishes_cost * 0.4, 2),
+        "division": "09_finishes",
+    })
+
+    # Paint (Division 09)
+    paint_sf = round(area_sf * 4)
+    quantities.append({
+        "item": "Paint & coatings",
+        "quantity": paint_sf,
+        "unit": "sq ft",
+        "unit_cost": _safe_div(finishes_cost * 0.3, paint_sf),
+        "total_cost": round(finishes_cost * 0.3, 2),
+        "division": "09_finishes",
+    })
+
+    # Plumbing fixtures (Division 22)
+    plumbing_cost = breakdown.get("22_plumbing", 0)
+    fixture_count = round(area_sf / 400 * quality_multiplier)
+    quantities.append({
+        "item": "Plumbing fixtures",
+        "quantity": fixture_count,
+        "unit": "fixtures",
+        "unit_cost": _safe_div(plumbing_cost * 0.6, fixture_count),
+        "total_cost": round(plumbing_cost * 0.6, 2),
+        "division": "22_plumbing",
+    })
+
+    # HVAC (Division 23)
+    hvac_cost = breakdown.get("23_hvac", 0)
+    hvac_tons = round(area_sf / 500 * quality_multiplier, 1)
+    quantities.append({
+        "item": "HVAC system",
+        "quantity": hvac_tons,
+        "unit": "tons capacity",
+        "unit_cost": _safe_div(hvac_cost, hvac_tons),
+        "total_cost": hvac_cost,
+        "division": "23_hvac",
+    })
+
+    # Electrical (Division 26)
+    electrical_cost = breakdown.get("26_electrical", 0)
+    electrical_circuits = round(area_sf / 100 * quality_multiplier)
+    quantities.append({
+        "item": "Electrical circuits",
+        "quantity": electrical_circuits,
+        "unit": "circuits",
+        "unit_cost": _safe_div(electrical_cost * 0.5, electrical_circuits),
+        "total_cost": round(electrical_cost * 0.5, 2),
+        "division": "26_electrical",
+    })
+
+    # Light fixtures (Division 26)
+    light_count = round(area_sf / 80 * quality_multiplier)
+    quantities.append({
+        "item": "Light fixtures",
+        "quantity": light_count,
+        "unit": "fixtures",
+        "unit_cost": _safe_div(electrical_cost * 0.3, light_count),
+        "total_cost": round(electrical_cost * 0.3, 2),
+        "division": "26_electrical",
+    })
+
+    return quantities
+
