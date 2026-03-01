@@ -1,0 +1,163 @@
+# Evaluation Configuration for Construction Cost Estimation
+
+# ── Paths ─────────────────────────────────────────────────────────────
+paths:
+  # Synthetic 53-case dataset
+  dataset: eval_dataset.json
+  floor_plans_dir: floor_plans
+  # Rich 25-case real-project dataset
+  rich_dataset: rich_eval_dataset.json
+  rich_floor_plans_dir: rich_floor_plans
+  # Shared output dirs
+  results_dir: results
+  predictions_dir: results
+
+# ── Evaluation thresholds ─────────────────────────────────────────────
+thresholds:
+  total_mape_acceptable: 0.15    # 15% MAPE overall is acceptable
+  division_mape_acceptable: 0.25  # 25% per-division MAPE is acceptable
+  within_10_pct_target: 0.40     # 40% of predictions within 10%
+  within_20_pct_target: 0.65     # 65% of predictions within 20%
+  within_30_pct_target: 0.80     # 80% of predictions within 30%
+
+# ── Dataset 1: Synthetic 53-case dataset ─────────────────────────────
+# Built by setup_dataset.py. Single LOC drawing + generated spec per case.
+synthetic_dataset:
+  total_cases: 53
+  drawings_per_case: 1
+  spec_pages_per_case: 20  # generated, CSI-formatted
+  categories:
+    residential:
+      count: 15
+      subtypes:
+        - single_family_economy
+        - single_family_standard
+        - single_family_premium
+        - single_family_custom
+        - multi_family_duplex
+        - multi_family_triplex
+        - multi_family_fourplex
+        - apartment_lowrise
+        - apartment_midrise
+        - apartment_garden
+        - townhouse_standard
+        - townhouse_luxury
+        - condo_midrise
+        - luxury_estate
+        - custom_architectural
+    commercial:
+      count: 12
+      subtypes:
+        - office_lowrise
+        - office_midrise
+        - office_highrise
+        - retail_strip
+        - retail_bigbox
+        - restaurant_casual
+        - restaurant_fine
+        - hotel_limited
+        - hotel_full_service
+        - bank_branch
+        - medical_office
+        - mixed_use
+    industrial:
+      count: 8
+      subtypes:
+        - warehouse_light
+        - warehouse_heavy
+        - manufacturing_light
+        - manufacturing_heavy
+        - data_center
+        - research_lab
+        - cold_storage
+        - food_processing
+    institutional:
+      count: 10
+      subtypes:
+        - school_elementary
+        - school_high
+        - university_classroom
+        - university_science
+        - hospital_acute
+        - clinic_outpatient
+        - church_standard
+        - church_cathedral
+        - library_public
+        - community_center
+    infrastructure:
+      count: 8
+      subtypes:
+        - parking_surface
+        - parking_structured
+        - fire_station
+        - police_station
+        - transit_station
+        - bus_maintenance
+        - water_treatment
+        - electrical_substation
+
+# ── Dataset 2: Rich 25-case real-project dataset ──────────────────────
+# Built by build_rich_dataset.py. Real spec PDFs + LOC drawings per project.
+rich_dataset:
+  total_cases: 25
+  drawings_per_case: 6         # Real LOC HABS architectural drawings
+  avg_spec_pages: 211          # Average across all projects
+  real_pdf_projects: 11        # Projects with real downloaded spec PDFs
+  real_bid_projects: 6         # Projects with actual public bid award amounts
+  cost_range_usd: [139000, 23520000]
+  sources:
+    california_dgs_obas:
+      description: "California DGS Office of Business and Acquisition Services"
+      url: "https://www.dgs.ca.gov/OBAS"
+      projects: [PRJ-001, PRJ-002, PRJ-003, PRJ-004, PRJ-005, PRJ-006, PRJ-007, PRJ-008]
+      note: "Full project manual PDFs — 100 to 1352 pages each"
+    michigan_dtmb:
+      description: "Michigan Department of Technology, Management and Budget"
+      url: "https://michigan.gov/dtmb"
+      projects: [PRJ-009, PRJ-010, PRJ-011]
+      note: "Actual low-bid award amounts from public bid tabulations"
+    pennsylvania_dgs:
+      description: "Pennsylvania Department of General Services"
+      url: "https://www.pa.gov/agencies/dgs"
+      projects: [PRJ-012, PRJ-013]
+      note: "PRJ-012 actual award $23,520,000 (Rycon Construction)"
+    idaho_dpw:
+      description: "Idaho Division of Public Works"
+      url: "https://dpw.idaho.gov"
+      projects: [PRJ-014, PRJ-015]
+      note: "Actual bid amounts from Feb/Mar 2024 bid openings"
+    municipal:
+      description: "City of Page AZ, Indiana DNR, Georgia State University"
+      projects: [PRJ-016, PRJ-017, PRJ-018]
+      note: "Real spec PDFs from public procurement portals"
+    new_construction:
+      description: "RSMeans-calibrated estimates for variety of project types"
+      projects: [PRJ-019, PRJ-020, PRJ-021, PRJ-022, PRJ-023, PRJ-024, PRJ-025]
+    loc_drawings:
+      description: "Library of Congress HABS/HAER public domain drawings"
+      url: "https://tile.loc.gov/storage-services/service/pnp/habshaer/"
+      note: "40+ verified URLs in rich_dataset_sources.py"
+
+# ── Floor plan drawing sources (synthetic dataset) ────────────────────
+drawing_sources:
+  loc_habs:
+    description: "Library of Congress HABS/HAER — 566 public domain architectural drawings"
+    tile_server: "https://tile.loc.gov/storage-services/service/pnp/habshaer/"
+    search: "https://www.loc.gov/pictures/search/?q=floor+plan&sp=1&st=gallery"
+    use_for: [residential, commercial, industrial, institutional, infrastructure]
+  cubicasa5k:
+    description: "CubiCasa5K — 5000 real floor plans with SVG annotations"
+    zenodo_url: "https://zenodo.org/records/2613548"
+    kaggle_dataset: "cubicasa5k"
+    size_gb: 5.5
+    use_for: [residential]
+  floorplancad:
+    description: "FloorPlanCAD — 15k+ CAD-based floor plans"
+    huggingface_repo: "ZJUVAG/floorplancad"
+    use_for: [commercial, industrial, institutional]
+
+# ── Quality levels ────────────────────────────────────────────────────
+quality_levels:
+  - low    # Economy / basic finishes
+  - mid    # Standard / mid-grade
+  - high   # Premium / luxury

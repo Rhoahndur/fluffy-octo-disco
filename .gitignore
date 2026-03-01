@@ -1,0 +1,14 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Claude Code settings
+.claude/
+
+# Downloaded raw spec PDFs (re-downloadable via build_rich_dataset.py)
+rich_floor_plans/*/specs/
+
+# Debug artifacts
+bad_chars_report.txt
+*.tmp
