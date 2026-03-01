@@ -12,3 +12,4 @@ rich_floor_plans/*/specs/
 # Debug artifacts
 bad_chars_report.txt
 *.tmp
+.DS_Store

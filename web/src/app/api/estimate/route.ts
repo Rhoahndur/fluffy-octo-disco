@@ -9,13 +9,19 @@ import { findSimilarProjects } from '@/lib/similar/matcher';
 import { findLocationFactor } from '@/lib/cost/data/location-factors';
 import { saveEstimate, isSupabaseConfigured } from '@/lib/db/supabase';
 import type { EstimateRequest, EstimateResponse, LLMAnalysis, CVAnalysis } from '@/types';
+import type { AnalysisContext, CVAnalysisForLLM, PDFExtractionForLLM } from '@/lib/llm/prompts';
+
+// Extended request type to support PDF extraction data
+interface ExtendedEstimateRequest extends EstimateRequest {
+  pdfExtraction?: PDFExtractionForLLM;
+}
 
 export const maxDuration = 60; // Allow up to 60 seconds for LLM calls
 
 export async function POST(request: NextRequest) {
   try {
-    const body: EstimateRequest = await request.json();
-    const { images = [], description = '', location } = body;
+    const body: ExtendedEstimateRequest = await request.json();
+    const { images = [], description = '', location, pdfExtraction } = body;
 
     // Validate input
     if (images.length === 0 && !description.trim()) {
@@ -25,31 +31,45 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Run analyses in parallel
-    const [claudeResult, geminiResult, opencvResult] = await Promise.all([
-      // Claude analysis
-      analyzeWithClaude(images, description).catch(err => {
+    // Step 1: Run OpenCV analysis first (deterministic, fast)
+    // This provides ground truth measurements for LLMs
+    let opencvResult = null;
+    if (images.length > 0) {
+      try {
+        opencvResult = await analyzeWithOpenCV(images[0]);
+      } catch (err) {
+        console.error('OpenCV analysis failed:', err);
+      }
+    }
+
+    // Extract CV data for LLM context and reconciliation
+    const opencvAnalysis = opencvResult?.analysis || undefined;
+    const opencvForLLM = opencvResult?.rawForLLM || undefined;
+
+    // Build context for LLMs (CV + PDF data)
+    const llmContext: AnalysisContext = {
+      cvAnalysis: opencvForLLM as CVAnalysisForLLM | undefined,
+      pdfExtraction: pdfExtraction || undefined,
+    };
+
+    // Step 2: Run LLM analyses in parallel WITH CV context
+    // LLMs now receive deterministic measurements to inform their classification
+    const [claudeResult, geminiResult] = await Promise.all([
+      // Claude analysis with CV context
+      analyzeWithClaude(images, description, llmContext).catch(err => {
         console.error('Claude analysis failed:', err);
         return null;
       }),
-      // Gemini analysis
-      analyzeWithGemini(images, description).catch(err => {
+      // Gemini analysis with CV context
+      analyzeWithGemini(images, description, llmContext).catch(err => {
         console.error('Gemini analysis failed:', err);
         return null;
       }),
-      // OpenCV analysis (first image only)
-      images.length > 0
-        ? analyzeWithOpenCV(images[0]).catch(err => {
-            console.error('OpenCV analysis failed:', err);
-            return null;
-          })
-        : Promise.resolve(null),
     ]);
 
     // Extract successful results
     const claudeAnalysis = claudeResult?.success ? claudeResult.data : undefined;
     const geminiAnalysis = geminiResult?.success ? geminiResult.data : undefined;
-    const opencvAnalysis = opencvResult || undefined;
 
     // Check if we have at least one LLM result
     if (!claudeAnalysis && !geminiAnalysis) {
