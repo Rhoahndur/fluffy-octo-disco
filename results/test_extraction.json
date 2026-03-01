@@ -1,0 +1,142 @@
+[
+  {
+    "project_id": "PRJ-001",
+    "extraction_timestamp": "2026-03-01T20:20:14.181628+00:00",
+    "pdf_sources": [
+      "spec_book_1.pdf",
+      "spec_book_2.pdf",
+      "spec_book_3.pdf"
+    ],
+    "total_pages_processed": 1015,
+    "total_chars_extracted": 475053,
+    "structured_fields": {
+      "project_name": "DSH-ATASCADERO RE-ROOF, HVAC REPLACEMENT & ELECTRICAL UPGRADES",
+      "project_number": "DGS000000142452",
+      "agency": "DEPARTMENT OF GENERAL SERVICES",
+      "location": "ATASCADERO, SAN LUIS OBISPO COUNTY, CALIFORNIA",
+      "building_type": "institutional",
+      "sub_type": "hospital_acute",
+      "construction_type": "renovation",
+      "roof_type": "flat_membrane",
+      "hvac_system": "air_handling_units",
+      "electrical_service": "12KV feeder extension, 12KV switch gear, back-up generator",
+      "fire_protection": "fire_alarm",
+      "quality_level": "standard",
+      "csi_divisions_present": [
+        "00",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "22",
+        "23",
+        "26",
+        "28",
+        "31",
+        "32",
+        "33"
+      ],
+      "contract_duration_days": 1220
+    },
+    "qualitative_insights": {
+      "scope_summary": "The project involves re-roofing, HVAC replacement, and electrical upgrades at the DSH-Atascadero facility. This includes extensive demolition, new concrete work, structural steel, masonry, and exterior improvements like flexible paving, curbs, sidewalks, and chain-link fencing. The project also features stormwater management elements such as gravity piping, vortex-type hydrodynamic separators, and stormwater ponds, with a significant focus on hazardous material abatement.",
+      "complexity_factors": [
+        "Phased demolition and installation of roof and mechanical equipment, indicating potential operational constraints.",
+        "Work within an occupied building (Department of State Hospitals), requiring careful coordination and adherence to 'Hospital Project Procedures' (Section 01 35 54).",
+        "Potential for hazardous materials (Asbestos, Lead, PCB's, Petroleum fuels, etc.) as indicated by the 'Hazmat Report' in Appendix A and 'Asbestos Abatement Observation' (Section 01 45 33).",
+        "Seismic requirements for electrical systems (Section 26 05 48.16), suggesting a location in a seismic zone.",
+        "Extensive electrical upgrades including medium-voltage components and a generator paralleling switchgear, indicating high technical complexity.",
+        "Coordination with existing utilities (PG&E electrical service connection).",
+        "Occupied facility (State Hospital) requiring strict coordination, security protocols, and minimal disruption to operations (24/7 functionality).",
+        "Extensive hazardous material abatement (lead paint, asbestos, PCBs) with specific removal, disposal, and monitoring requirements, including potential for uncovering additional hazardous materials.",
+        "Phased construction (22 phases) and strict scheduling requirements, including a detailed CPM schedule and short interval schedules.",
+        "Coordination with multiple State agencies and external entities (State Fire Marshal, Caltrans, DFEH, DGS, ORIM, PG&E).",
+        "Detailed inspection and testing requirements, including State-mandated CCR Title 24 tests and inspections, and contractor-provided testing for systems.",
+        "Working within an existing operational hospital environment with strict security, access, noise, and utility interruption protocols."
+      ],
+      "cost_drivers": [
+        "Specialized electrical equipment: new PG&E electrical service connection, transformer, switchgears, backup generator, diesel fuel storage, medium-voltage cables, circuit breaker switchgear, and generator paralleling switchgear.",
+        "Premium roofing materials: Ketone Ethylene Ester Roofing and Fluid-Applied Roofing (Sections 07 54 16, 07 56 00).",
+        "Prevailing wage requirements (Labor Code, Section 1774 et seq.) and DIR monitoring, increasing labor costs.",
+        "Potential costs associated with hazardous material abatement and disposal.",
+        "Mandatory pre-bid site inspection and security clearance requirements, adding administrative burden and potential delays for bidders.",
+        "Performance and payment bonds, each 100% of contract price.",
+        "Hazardous material abatement, removal, and disposal, including potential for unforeseen hazardous materials (allowance of $100,000).",
+        "Liquidated damages for project delays ($5,500/day) and specific hazardous materials removal delays ($1,000/day).",
+        "Premium time for off-hours work, as directed by the State (allowance of $90,000).",
+        "Extensive insurance requirements, including high general liability ($10,000,000), automobile liability ($1,000,000), workers' compensation ($1,000,000), and pollution liability ($2,000,000).",
+        "Specialized equipment and labor for trenching, de-watering, and compaction in potentially difficult soil conditions.",
+        "Compliance with Caltrans standards for flexible paving, concrete work, and chain-link fencing, which may require specific materials and construction methods."
+      ],
+      "risk_factors": [
+        "Presence of hazardous materials (Hazmat Report, Asbestos Abatement Observation) requiring specialized handling and potential for unforeseen conditions.",
+        "Working within an operational hospital environment, increasing risks of disruption, safety incidents, and potential for delays due to patient/staff access.",
+        "Regulatory hurdles and compliance with numerous California codes and regulations (e.g., Public Contract Code, Labor Code, California Code of Regulations, Title 24, State Fire Marshal).",
+        "Potential for weather-sensitive work during re-roofing and HVAC replacement, especially given the phased nature.",
+        "Unforeseen subsurface or latent physical conditions (Paragraph 3.1.3 of General Conditions).",
+        "Strict penalties for non-compliance with DVBE participation and prevailing wage requirements.",
+        "Unforeseen hazardous materials (asbestos, lead paint, PCBs) that could lead to significant cost and schedule impacts.",
+        "Delays due to State inspections, approvals, or coordination with hospital operations, leading to liquidated damages.",
+        "Damage to existing utilities or improvements during excavation, requiring contractor-borne repair costs.",
+        "Failure of compaction tests for earthwork, leading to retesting costs and rework at contractor's expense.",
+        "Security breaches or non-compliance with hospital regulations, potentially leading to work suspension or contract termination.",
+        "Weather-related impacts on hazardous materials removal and other outdoor work, especially given the strict schedule."
+      ],
+      "schedule_constraints": [
+        "Project completion within a fixed contract time (Document 00 73 00, Supplementary Conditions), with liquidated damages for delays (Paragraph 7.3).",
+        "Phased demolition and installation, requiring careful sequencing to minimize disruption.",
+        "14-day response time for RFIs, with potential for back-charges for superfluous RFIs.",
+        "Strict deadlines for submitting cost estimates for changes (14 days) and written notice for potential Change Orders (7 days).",
+        "Mandatory pre-bid site inspection on a specific date (February 5th, 2025) and security clearance deadline (January 30th, 2025).",
+        "Requirement for Contractor to provide 48-hour written notice for inspections and 3 business days for SFM inspections.",
+        "Overall contract time of 1,220 calendar days, with 'Time is of the Essence'.",
+        "Hazardous Materials removal work has a specific, accelerated schedule: 14 days for submittals, 14 days for State review, 14 days to start on-site work, and 30 working days for completion.",
+        "Liquidated damages of $5,500 per day for overall project delays and $1,000 per day for hazardous materials removal delays.",
+        "Strict deadlines for submittals (e.g., 10 days for 90-day schedule, 30 days for Official Progress Schedule, 14-60 days for various material submittals).",
+        "Work must be performed on normal work days and hours (8:00 am to 4:30 pm), with after-hours work requiring 3 days advance approval.",
+        "Hospital operations require minimal interference, with service interruptions needing 5 days advance notice and strict time limits (e.g., 4-hour electrical power restoration)."
+      ],
+      "material_quality_signals": [
+        "Ketone Ethylene Ester Roofing and Fluid-Applied Roofing (Sections 07 54 16, 07 56 00) suggest high-performance or specialized roofing systems.",
+        "Specific requirements for structural steel, concrete unit masonry, and metal decking (Division 05) indicate engineered and durable construction.",
+        "LED Interior Lighting (Section 26 51 19) points to modern, energy-efficient lighting solutions.",
+        "Detailed specifications for HVAC components, including Air Handling Units (Section 23 74 13), imply a focus on system performance and quality.",
+        "Use of Silane Water Repellents (Section 07 19 16) indicates a focus on long-term moisture protection and building envelope integrity."
+      ],
+      "regulatory_notes": [
+        "Prevailing wage requirements (Labor Code, Section 1774 et seq.) and DIR monitoring and enforcement.",
+        "Disabled Veteran Business Enterprise (DVBE) participation program requirements (3% mandatory, with incentives for higher participation).",
+        "Compliance with California Code of Regulations, Title 24, California Building Standards Code (CBSC), and other Applicable Codes.",
+        "Requirement for specific contractor licenses (e.g., B license, C-16 Fire Protection, Hazardous Substance Removal Certification).",
+        "Executive Order N-6-22 regarding Economic Sanctions against Russia and Russian entities/individuals.",
+        "Generative Artificial Intelligence (GenAI) Reporting and Factsheet (STD 1000) disclosure requirements.",
+        "Compliance with State Fire Marshal (SFM) for inspections and approvals, especially for deferred approval submittals (60-day review).",
+        "Adherence to California Public Contract Code Sections 10262, 10262.5, 4107, 10115.12b, and Military and Veterans Code Section 999.5(e) for subcontractor payments and DVBE program.",
+        "Strict Nondiscrimination Clause compliance, including Fair Employment and Housing Act (Gov. Code, § 12900 et seq.) and Standard California Nondiscrimination Construction Contract Specifications (Gov. Code Section 12990).",
+        "OSHA compliance for excavation safety, including a required Trench Safety Plan for trenches over five feet deep and a Cal-OSHA permit.",
+        "CCR Title 24 for testing and inspections (Earthwork, Concrete, Masonry, Structural Steel).",
+        "Local Air Pollution Control District Regulations for fiber concentration limits during asbestos abatement."
+      ],
+      "mep_complexity": "Highly complex. The project involves HVAC replacement and electrical upgrades, indicating significant mechanical and electrical work. The presence of a State Hospital operating 24/7 necessitates careful coordination of utility interruptions, temporary services, and security for MEP work. The detailed electrical sections (Division 26) covering medium-voltage cables, switchgear, generators, and specialized systems like digital addressable fire-alarm systems (Division 28) further underscore the high complexity. The requirement for testing, adjusting, and balancing (TAB) procedures for systems also points to intricate MEP installations.",
+      "site_conditions": [
+        "Location at DSH-Atascadero, San Luis Obispo County, California, implying potential seismic activity (Section 26 05 48.16 for seismic controls).",
+        "Existing utilities will be present, requiring coordination for the new PG&E electrical service connection.",
+        "The site is an operational hospital, necessitating adherence to 'Hospital Project Procedures' (Section 01 35 54) and security clearances.",
+        "Potential for subsurface or latent physical conditions and hazardous materials (Paragraph 3.1.3 of General Conditions, Hazmat Report).",
+        "Urban or developed setting implied by the need for new PG&E service and existing infrastructure.",
+        "Located on State of California property at 10333 El Camino Real, Atascadero, CA 93422.",
+        "Existing Hospital grounds with ongoing operations, requiring strict security, access control, and minimal disruption.",
+        "Presence of existing underground utilities (drainage, water, gas, electrical) that may not be fully mapped, requiring careful excavation.",
+        "Potential for wet soils during trenching, requiring de-watering and specific compaction measures.",
+        "Existing landscaped areas that must be protected and maintained, with penalties for damage to trees.",
+        "Existing structures and improvements requiring protection during alteration work."
+      ],
+      "phasing_requirements": "The project explicitly states 'phased demolition of roof and mechanical equipment' and 'phased installation of new specified roof materials.' This indicates that the work must be carefully sequenced to maintain facility operations and minimize disruption. The 'Hospital Project Procedures' (Section 01 35 54) will likely detail specific operational constraints and access limitations during each phase."
+    }
+  }
+]
