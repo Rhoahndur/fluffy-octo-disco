@@ -1,12 +1,13 @@
 // Gemini Vision API client
 
 import { GoogleGenerativeAI } from '@google/generative-ai';
-import { ANALYSIS_SYSTEM_PROMPT, ANALYSIS_USER_PROMPT } from './prompts';
+import { ANALYSIS_SYSTEM_PROMPT, ANALYSIS_USER_PROMPT, type AnalysisContext } from './prompts';
 import type { LLMAnalysisResponse, LLMResult } from './types';
 
 export async function analyzeWithGemini(
   images: string[], // Base64 encoded images
-  description: string
+  description: string,
+  context?: AnalysisContext
 ): Promise<LLMResult> {
   try {
     const apiKey = process.env.GOOGLE_AI_API_KEY;
@@ -26,8 +27,8 @@ export async function analyzeWithGemini(
     // Build parts array
     const parts: Array<{ text: string } | { inlineData: { mimeType: string; data: string } }> = [];
 
-    // Add system prompt as first part
-    parts.push({ text: ANALYSIS_SYSTEM_PROMPT + '\n\n' + ANALYSIS_USER_PROMPT(description, images.length > 0) });
+    // Add system prompt as first part with context
+    parts.push({ text: ANALYSIS_SYSTEM_PROMPT + '\n\n' + ANALYSIS_USER_PROMPT(description, images.length > 0, context) });
 
     // Add images
     for (const imageBase64 of images) {

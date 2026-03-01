@@ -1,7 +1,7 @@
 // Claude Vision API client
 
 import Anthropic from '@anthropic-ai/sdk';
-import { ANALYSIS_SYSTEM_PROMPT, ANALYSIS_USER_PROMPT } from './prompts';
+import { ANALYSIS_SYSTEM_PROMPT, ANALYSIS_USER_PROMPT, type AnalysisContext } from './prompts';
 import type { LLMAnalysisResponse, LLMResult } from './types';
 
 const anthropic = new Anthropic({
@@ -10,7 +10,8 @@ const anthropic = new Anthropic({
 
 export async function analyzeWithClaude(
   images: string[], // Base64 encoded images
-  description: string
+  description: string,
+  context?: AnalysisContext
 ): Promise<LLMResult> {
   try {
     // Build content array with images and text
@@ -43,10 +44,10 @@ export async function analyzeWithClaude(
       });
     }
 
-    // Add text prompt
+    // Add text prompt with context
     content.push({
       type: 'text',
-      text: ANALYSIS_USER_PROMPT(description, images.length > 0),
+      text: ANALYSIS_USER_PROMPT(description, images.length > 0, context),
     });
 
     const response = await anthropic.messages.create({

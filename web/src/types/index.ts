@@ -17,14 +17,55 @@ export interface LLMAnalysis {
   notes: string;
 }
 
+// Measurement with explicit unit
+export interface Measurement {
+  value: number;
+  unit: string; // e.g., "SF", "LF", "CY"
+}
+
 export interface CVAnalysis {
-  dimensions: {
-    estimated_sqft?: number;
-    rooms?: Array<{ width: number; height: number }>;
-    scale_detected: boolean;
-  };
-  room_count: number;
+  // Drawing classification
   drawing_type: 'floor_plan' | 'elevation' | 'site_plan' | 'photo' | 'unknown';
+
+  // Quantitative takeoff - deterministic counts
+  counts: {
+    doors: number;
+    windows: number;
+    columns: number;
+    fixtures: number;
+    rooms: number;
+  };
+
+  // Measurements with explicit units
+  measurements: {
+    total_area?: Measurement | null;      // SF (square feet)
+    total_wall_length?: Measurement | null; // LF (linear feet)
+    concrete_slab?: Measurement | null;   // CY (cubic yards)
+    foundation?: Measurement | null;      // CY
+    excavation?: Measurement | null;      // CY
+  };
+
+  // Material specs from OCR
+  materials: {
+    [key: string]: boolean; // e.g., { concrete: true, steel: true }
+  };
+
+  // Scale detection info
+  scale: {
+    detected: boolean;
+    source?: string;
+    confidence?: number;
+  };
+
+  // Text extraction from OCR
+  text_extraction?: {
+    dimensions_found: string[];
+    grades_specs: string[];
+    sqft_from_text: number[];
+  };
+
+  // Room count
+  room_count: number;
   confidence: number;
 }
 
