@@ -10,7 +10,7 @@ import re
 import json
 from typing import Optional
 
-import google.generativeai as genai
+from openai import OpenAI
 
 from llm_prompts import ANALYSIS_SYSTEM_PROMPT, build_analysis_user_prompt
 
@@ -21,60 +21,64 @@ def analyze_with_gemini(
     context: Optional[dict] = None,
 ) -> dict:
     """
-    Analyze construction images/description using Gemini.
-    Direct port of analyzeWithGemini from gemini.ts.
-
-    Args:
-        images: List of base64-encoded image strings (with or without data URI prefix)
-        description: Project description text
-        context: Optional analysis context with cv_analysis and/or pdf_extraction
-
-    Returns:
-        dict with either:
-          {"success": True, "data": <LLMAnalysisResponse>, "provider": "gemini"}
-          {"success": False, "error": {"provider": "gemini", "error": <message>}}
+    Analyze construction images/description using Gemini via OpenRouter.
     """
     try:
-        api_key = os.environ.get("GOOGLE_AI_API_KEY")
+        api_key = os.environ.get("OPENROUTER_API_KEY")
         if not api_key:
             return {
                 "success": False,
-                "error": {"provider": "gemini", "error": "GOOGLE_AI_API_KEY not configured"},
+                "error": {"provider": "gemini", "error": "OPENROUTER_API_KEY not configured"},
             }
 
-        genai.configure(api_key=api_key)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=api_key,
+        )
 
-        # Build parts array
-        parts = []
-
-        # Add system prompt + user prompt as first text part (matches TS implementation)
-        user_prompt = build_analysis_user_prompt(description, len(images) > 0, context)
-        parts.append(ANALYSIS_SYSTEM_PROMPT + "\n\n" + user_prompt)
+        content = []
 
         # Add images
         for image_base64 in images:
-            mime_type = "image/png"
-            data = image_base64
+            # Ensure proper URL format for OpenAI schema
+            data_url = image_base64
+            if not data_url.startswith("data:"):
+                 data_url = f"data:image/jpeg;base64,{image_base64}"
 
-            if image_base64.startswith("data:"):
-                match = re.match(r"^data:([^;]+);base64,(.+)$", image_base64)
-                if match:
-                    mime_type = match.group(1)
-                    data = match.group(2)
-
-            import base64
-            image_bytes = base64.b64decode(data)
-            parts.append({
-                "mime_type": mime_type,
-                "data": image_bytes,
+            content.append({
+                "type": "image_url",
+                "image_url": {
+                    "url": data_url
+                },
             })
 
-        result = model.generate_content(parts)
-        text = result.text
+        # Add text prompt
+        content.append({
+            "type": "text",
+            "text": build_analysis_user_prompt(description, len(images) > 0, context),
+        })
+
+        messages = [
+            {"role": "system", "content": ANALYSIS_SYSTEM_PROMPT},
+            {"role": "user", "content": content},
+        ]
+
+        response = client.chat.completions.create(
+            model="google/gemini-2.5-flash",
+            messages=messages,
+            max_tokens=1024,
+        )
+
+        text_content = response.choices[0].message.content
+
+        if not text_content:
+            return {
+                "success": False,
+                "error": {"provider": "gemini", "error": "No text response from Gemini"},
+            }
 
         # Parse JSON from response
-        json_match = re.search(r"\{[\s\S]*\}", text)
+        json_match = re.search(r"\{[\s\S]*\}", text_content)
         if not json_match:
             return {
                 "success": False,

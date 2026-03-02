@@ -1,0 +1,137 @@
+{
+  "results": [
+    {
+      "project_id": "PRJ-001",
+      "ground_truth": 8750000.0,
+      "run_costs": [
+        5430000.0,
+        4344000.0,
+        20272000.0
+      ],
+      "average_estimated": 10015333.333333334,
+      "difference": 1265333.333333334,
+      "percent_difference": 14.460952380952389
+    },
+    {
+      "project_id": "PRJ-002",
+      "ground_truth": 6200000.0,
+      "run_costs": [
+        8407200.0,
+        9808400.0,
+        7006000.0
+      ],
+      "average_estimated": 8407200.0,
+      "difference": 2207200.0,
+      "percent_difference": 35.6
+    },
+    {
+      "project_id": "PRJ-003",
+      "ground_truth": 12400000.0,
+      "run_costs": [
+        27967500.0,
+        11442750.0,
+        34650000.0
+      ],
+      "average_estimated": 24686750.0,
+      "difference": 12286750.0,
+      "percent_difference": 99.08669354838709
+    },
+    {
+      "project_id": "PRJ-004",
+      "ground_truth": 4850000.0,
+      "run_costs": [
+        4467840.0,
+        6175000.0,
+        8586240.0
+      ],
+      "average_estimated": 6409693.333333333,
+      "difference": 1559693.333333333,
+      "percent_difference": 32.158625429553254
+    },
+    {
+      "project_id": "PRJ-005",
+      "ground_truth": 3200000.0,
+      "run_costs": [
+        155520.0,
+        979776.0,
+        1119744.0
+      ],
+      "average_estimated": 751680.0,
+      "difference": -2448320.0,
+      "percent_difference": -76.51
+    },
+    {
+      "project_id": "PRJ-006",
+      "ground_truth": 9800000.0,
+      "run_costs": [
+        3562000.0,
+        103545.0,
+        1370000.0
+      ],
+      "average_estimated": 1678515.0,
+      "difference": -8121485.0,
+      "percent_difference": -82.87229591836734
+    },
+    {
+      "project_id": "PRJ-007",
+      "ground_truth": 2750000.0,
+      "run_costs": [
+        7006000.0,
+        11209600.0,
+        9808400.0
+      ],
+      "average_estimated": 9341333.333333334,
+      "difference": 6591333.333333334,
+      "percent_difference": 239.68484848484852
+    },
+    {
+      "project_id": "PRJ-008",
+      "ground_truth": 3850000.0,
+      "run_costs": [
+        6614400.0,
+        9930336.0,
+        9739891.2
+      ],
+      "average_estimated": 8761542.4,
+      "difference": 4911542.4,
+      "percent_difference": 127.57252987012988
+    },
+    {
+      "project_id": "PRJ-016",
+      "ground_truth": 485000.0,
+      "run_costs": [
+        979776.0,
+        136080.0,
+        2378320.0
+      ],
+      "average_estimated": 1164725.3333333333,
+      "difference": 679725.3333333333,
+      "percent_difference": 140.14955326460478
+    },
+    {
+      "project_id": "PRJ-017",
+      "ground_truth": 1650000.0,
+      "run_costs": [
+        2079200.0,
+        1949250.0,
+        2027220.0
+      ],
+      "average_estimated": 2018556.6666666667,
+      "difference": 368556.66666666674,
+      "percent_difference": 22.336767676767682
+    },
+    {
+      "project_id": "PRJ-018",
+      "ground_truth": 4200000.0,
+      "run_costs": [
+        9808400.0,
+        25221600.0,
+        14012000.0
+      ],
+      "average_estimated": 16347333.333333334,
+      "difference": 12147333.333333334,
+      "percent_difference": 289.22222222222223
+    }
+  ],
+  "mape": 105.42313534507575
+}

@@ -120,9 +120,13 @@ def estimate_project(project_data: dict, floor_plan_images: list[str], descripti
     opencv_for_llm = opencv_result["raw_for_llm"] if opencv_result else None
 
     # Build context for LLMs (CV + PDF data)
+    pdf_extraction = project_data.get("structured_fields") or None
+    if isinstance(pdf_extraction, dict) and not pdf_extraction:  # Handle empty dict
+        pdf_extraction = None
+        
     llm_context = {
         "cv_analysis": opencv_for_llm,
-        "pdf_extraction": None,  # Could be populated from pdf_pipeline output
+        "pdf_extraction": pdf_extraction,
     }
 
     # ── Step 2: Dual LLM Analysis (parallel, with CV context) ──────────
@@ -280,22 +284,20 @@ def main():
                         help="Directory containing floor plan subdirectories.")
     args = parser.parse_args()
 
-    # Check for at least one LLM API key
-    has_anthropic = bool(os.environ.get("ANTHROPIC_API_KEY"))
-    has_google = bool(os.environ.get("GOOGLE_AI_API_KEY"))
+    # Check for LLM API key
+    has_openrouter = bool(os.environ.get("OPENROUTER_API_KEY"))
     has_modal = bool(os.environ.get("MODAL_ENDPOINT_URL"))
 
     print("=" * 60)
     print("Construction Cost Estimation Agent")
     print("=" * 60)
-    print(f"  Claude (Anthropic):  {'✓ configured' if has_anthropic else '✗ ANTHROPIC_API_KEY not set'}")
-    print(f"  Gemini (Google AI):  {'✓ configured' if has_google else '✗ GOOGLE_AI_API_KEY not set'}")
+    print(f"  LLMs (OpenRouter):   {'✓ configured' if has_openrouter else '✗ OPENROUTER_API_KEY not set'}")
     print(f"  OpenCV (Modal):      {'✓ configured' if has_modal else '○ MODAL_ENDPOINT_URL not set (optional)'}")
     print()
 
-    if not has_anthropic and not has_google:
-        print("WARNING: No LLM API keys configured. Results will be CV-only fallback estimates.")
-        print("Set ANTHROPIC_API_KEY and/or GOOGLE_AI_API_KEY environment variables.")
+    if not has_openrouter:
+        print("WARNING: No OpenRouter API key configured. Results will be CV-only fallback estimates.")
+        print("Set OPENROUTER_API_KEY environment variable.")
         print()
 
     # Load input JSON

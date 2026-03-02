@@ -10,7 +10,7 @@ import re
 import json
 from typing import Optional
 
-import anthropic
+from openai import OpenAI
 
 from llm_prompts import ANALYSIS_SYSTEM_PROMPT, build_analysis_user_prompt
 
@@ -21,78 +21,56 @@ def analyze_with_claude(
     context: Optional[dict] = None,
 ) -> dict:
     """
-    Analyze construction images/description using Claude.
-    Direct port of analyzeWithClaude from claude.ts.
-
-    Args:
-        images: List of base64-encoded image strings (with or without data URI prefix)
-        description: Project description text
-        context: Optional analysis context with cv_analysis and/or pdf_extraction
-
-    Returns:
-        dict with either:
-          {"success": True, "data": <LLMAnalysisResponse>, "provider": "claude"}
-          {"success": False, "error": {"provider": "claude", "error": <message>}}
+    Analyze construction images/description using Claude via OpenRouter.
     """
     try:
-        api_key = os.environ.get("ANTHROPIC_API_KEY")
+        api_key = os.environ.get("OPENROUTER_API_KEY")
         if not api_key:
             return {
                 "success": False,
-                "error": {"provider": "claude", "error": "ANTHROPIC_API_KEY not configured"},
+                "error": {"provider": "claude", "error": "OPENROUTER_API_KEY not configured"},
             }
 
-        client = anthropic.Anthropic(api_key=api_key)
+        client = OpenAI(
+            base_url="https://openrouter.ai/api/v1",
+            api_key=api_key,
+        )
 
-        # Build content array with images and text
         content = []
 
         # Add images
         for image_base64 in images:
-            media_type = "image/png"
-            data = image_base64
-
-            if image_base64.startswith("data:"):
-                match = re.match(r"^data:([^;]+);base64,(.+)$", image_base64)
-                if match:
-                    detected_type = match.group(1)
-                    if detected_type in ("image/jpeg", "image/png", "image/gif", "image/webp"):
-                        media_type = detected_type
-                    data = match.group(2)
+            # Ensure proper URL format for OpenAI schema
+            data_url = image_base64
+            if not data_url.startswith("data:"):
+                 data_url = f"data:image/jpeg;base64,{image_base64}"
 
             content.append({
-                "type": "image",
-                "source": {
-                    "type": "base64",
-                    "media_type": media_type,
-                    "data": data,
+                "type": "image_url",
+                "image_url": {
+                    "url": data_url
                 },
             })
 
-        # Add text prompt with context
+        # Add text prompt
         content.append({
             "type": "text",
             "text": build_analysis_user_prompt(description, len(images) > 0, context),
         })
 
-        response = client.messages.create(
-            model="claude-sonnet-4-20250514",
+        # OpenRouter supports specifying system message as a role
+        messages = [
+            {"role": "system", "content": ANALYSIS_SYSTEM_PROMPT},
+            {"role": "user", "content": content},
+        ]
+
+        response = client.chat.completions.create(
+            model="anthropic/claude-3.5-sonnet",
+            messages=messages,
             max_tokens=1024,
-            system=ANALYSIS_SYSTEM_PROMPT,
-            messages=[
-                {
-                    "role": "user",
-                    "content": content,
-                },
-            ],
         )
 
-        # Extract text response
-        text_content = None
-        for block in response.content:
-            if block.type == "text":
-                text_content = block.text
-                break
+        text_content = response.choices[0].message.content
 
         if not text_content:
             return {

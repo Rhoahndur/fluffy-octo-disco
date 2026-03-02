@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>SiteScope - AI Construction Cost Estimating</title>
+<meta name="description" content="Get instant construction cost estimates powered by AI. Upload project drawings and get RSMeans-calibrated breakdowns across 18 CSI divisions."/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<script>
+tailwind.config = {
+  darkMode: "class",
+  theme: {
+    extend: {
+      colors: {
+        "primary": "#3c83f6",
+        "background-dark": "#0A0A0A",
+        "surface-dark": "#111418",
+        "surface-light": "#1b2027",
+        "border-dark": "#2d3b45",
+        "accent-glow": "rgba(60, 131, 246, 0.5)",
+      },
+      fontFamily: { "display": ["Inter", "sans-serif"], "body": ["Inter", "sans-serif"] },
+      borderRadius: { "DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px" },
+      boxShadow: { 'glow': '0 0 20px -5px var(--tw-shadow-color)' },
+      backgroundImage: {
+        'blueprint-grid': "linear-gradient(rgba(60, 131, 246, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(60, 131, 246, 0.1) 1px, transparent 1px)",
+      }
+    },
+  },
+}
+</script>
+<style>
+body { font-family: 'Inter', sans-serif; }
+.glass-card {
+  background: rgba(27, 32, 39, 0.4);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+.glass-panel {
+  background: rgba(30, 41, 59, 0.4);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+.text-gradient {
+  background: linear-gradient(to right, #ffffff, #94a3b8);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.bg-grid-pattern {
+  background-size: 40px 40px;
+  mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 60%, transparent 100%);
+}
+.text-glow-blue { text-shadow: 0 0 20px rgba(60, 131, 246, 0.5); }
+.view { display: none; }
+.view.active { display: flex; }
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #0A0A0A; }
+::-webkit-scrollbar-thumb { background: #2d3b45; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #3c83f6; }
+@keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+.animate-fade-in-up { animation: fadeInUp 0.6s ease-out forwards; }
+.delay-100 { animation-delay: 0.1s; }
+.delay-200 { animation-delay: 0.2s; }
+</style>
+</head>
+<body class="bg-background-dark text-slate-100 antialiased overflow-x-hidden">
+<div class="relative flex h-auto min-h-screen w-full flex-col">
+
+<!-- ==================== HEADER ==================== -->
+<header class="sticky top-0 z-50 w-full border-b border-white/10 bg-background-dark/80 backdrop-blur-md">
+<div class="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 lg:px-8">
+  <div class="flex items-center gap-3 cursor-pointer" onclick="showView('landing')">
+    <div class="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/20 text-primary">
+      <span class="material-symbols-outlined text-[24px]">architecture</span>
+    </div>
+    <span class="text-xl font-bold tracking-tight text-white">SiteScope</span>
+  </div>
+  <nav class="hidden md:flex items-center gap-8">
+    <a class="text-sm font-medium text-slate-300 hover:text-white transition-colors" href="#features">Features</a>
+    <a class="text-sm font-medium text-slate-300 hover:text-white transition-colors" href="#how-it-works">How It Works</a>
+    <a class="text-sm font-medium text-slate-300 hover:text-white transition-colors" href="#" onclick="showView('dashboard');return false;">Dashboard</a>
+  </nav>
+  <div class="flex items-center gap-4">
+    <button class="hidden md:flex h-9 items-center justify-center rounded-lg border border-white/10 px-4 text-sm font-medium text-white hover:bg-white/5 transition-colors">Log In</button>
+    <button onclick="showView('dashboard')" class="flex h-9 items-center justify-center rounded-lg bg-primary px-4 text-sm font-bold text-white shadow-glow shadow-primary/50 hover:bg-primary/90 transition-all">Get Started</button>
+  </div>
+</div>
+</header>
+
+<!-- ==================== LANDING PAGE ==================== -->
+<main id="view-landing" class="view active flex-col flex-grow">
+
+<!-- Hero -->
+<section class="relative isolate overflow-hidden pt-14 lg:pt-24 pb-20">
+  <div class="absolute inset-0 -z-20 bg-blueprint-grid bg-grid-pattern opacity-30"></div>
+  <div aria-hidden="true" class="absolute inset-x-0 -top-40 -z-10 transform-gpu overflow-hidden blur-3xl sm:-top-80">
+    <div class="relative left-[calc(50%-11rem)] aspect-[1155/678] w-[36.125rem] -translate-x-1/2 rotate-[30deg] bg-gradient-to-tr from-primary to-[#9089fc] opacity-20 sm:left-[calc(50%-30rem)] sm:w-[72.1875rem]"></div>
+  </div>
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-3xl text-center">
+      <div class="mb-6 flex justify-center">
+        <div class="rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary backdrop-blur-sm">New: RSMeans 2024 Data Integration</div>
+      </div>
+      <h1 class="text-4xl font-black tracking-tight text-white sm:text-6xl lg:text-7xl">
+        Construction Cost <br/>
+        <span class="text-transparent bg-clip-text bg-gradient-to-r from-primary via-blue-400 to-indigo-400">Estimates in Seconds.</span>
+      </h1>
+      <p class="mt-6 text-lg leading-8 text-slate-400 max-w-2xl mx-auto">
+        AI analysis powered by <span class="text-white font-medium">Claude &amp; Gemini</span>, calibrated with <span class="text-white font-medium">RSMeans</span> for precision breakdowns. Turn blueprints into budgets instantly.
+      </p>
+      <div class="mt-10 flex items-center justify-center gap-x-6">
+        <button onclick="showView('dashboard')" class="group flex h-12 items-center gap-2 rounded-lg bg-primary px-8 text-base font-bold text-white shadow-lg shadow-primary/25 transition-all hover:scale-105 hover:bg-primary/90">
+          Start Estimating
+          <span class="material-symbols-outlined text-[20px] transition-transform group-hover:translate-x-1">arrow_forward</span>
+        </button>
+      </div>
+      <div class="mt-14 pt-8 border-t border-white/5">
+        <p class="text-xs font-semibold text-slate-500 uppercase tracking-wider mb-6">Powered by industry leaders</p>
+        <div class="flex justify-center items-center gap-8 opacity-60 grayscale hover:grayscale-0 transition-all duration-500">
+          <div class="flex items-center gap-2"><span class="material-symbols-outlined text-3xl">psychology</span><span class="font-bold text-xl">Claude AI</span></div>
+          <div class="h-4 w-px bg-white/20"></div>
+          <div class="flex items-center gap-2"><span class="material-symbols-outlined text-3xl">auto_awesome</span><span class="font-bold text-xl">Gemini</span></div>
+          <div class="h-4 w-px bg-white/20"></div>
+          <div class="flex items-center gap-2"><span class="material-symbols-outlined text-3xl">analytics</span><span class="font-bold text-xl">RSMeans</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Social Proof Stats -->
+<section class="bg-surface-dark/50 border-y border-white/5 py-12 relative overflow-hidden">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <dl class="grid grid-cols-1 gap-x-8 gap-y-8 text-center lg:grid-cols-3">
+      <div class="mx-auto flex max-w-xs flex-col gap-y-2 animate-fade-in-up">
+        <dt class="text-base leading-7 text-slate-400">Projects Estimated</dt>
+        <dd class="order-first text-3xl font-bold tracking-tight text-white sm:text-5xl">2,400+</dd>
+      </div>
+      <div class="mx-auto flex max-w-xs flex-col gap-y-2 animate-fade-in-up delay-100">
+        <dt class="text-base leading-7 text-slate-400">Construction Value</dt>
+        <dd class="order-first text-3xl font-bold tracking-tight text-primary sm:text-5xl">$1.2B+</dd>
+      </div>
+      <div class="mx-auto flex max-w-xs flex-col gap-y-2 animate-fade-in-up delay-200">
+        <dt class="text-base leading-7 text-slate-400">Accuracy Rate</dt>
+        <dd class="order-first text-3xl font-bold tracking-tight text-white sm:text-5xl">92%</dd>
+      </div>
+    </dl>
+  </div>
+</section>
+
+<!-- Features -->
+<section id="features" class="py-24 sm:py-32 bg-surface-dark relative">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl text-center mb-16">
+      <h2 class="text-primary font-semibold tracking-wide uppercase text-sm">Capabilities</h2>
+      <p class="mt-2 text-3xl font-bold tracking-tight text-white sm:text-4xl">Premium Estimation Features</p>
+      <p class="mt-4 text-lg text-slate-400">Leverage the power of multiple AI models and industry-standard data to ensure your bids are accurate and competitive.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="glass-card rounded-xl p-8 hover:border-primary/50 transition-colors group relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><span class="material-symbols-outlined text-8xl text-primary">memory</span></div>
+        <div class="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">memory</span></div>
+        <h3 class="text-xl font-bold text-white mb-3">Multi-AI Analysis</h3>
+        <p class="text-slate-400 leading-relaxed">Cross-referenced analysis using both Claude and Gemini models to detect potential cost overruns and material conflicts.</p>
+      </div>
+      <div class="glass-card rounded-xl p-8 hover:border-primary/50 transition-colors group relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><span class="material-symbols-outlined text-8xl text-primary">attach_money</span></div>
+        <div class="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">attach_money</span></div>
+        <h3 class="text-xl font-bold text-white mb-3">RSMeans Calibrated</h3>
+        <p class="text-slate-400 leading-relaxed">Real-time calibration with RSMeans location factors ensures your labor and material costs are accurate for your specific zip code.</p>
+      </div>
+      <div class="glass-card rounded-xl p-8 hover:border-primary/50 transition-colors group relative overflow-hidden">
+        <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity"><span class="material-symbols-outlined text-8xl text-primary">format_list_numbered</span></div>
+        <div class="h-12 w-12 rounded-lg bg-primary/20 flex items-center justify-center text-primary mb-6 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-2xl">format_list_numbered</span></div>
+        <h3 class="text-xl font-bold text-white mb-3">18 CSI Divisions</h3>
+        <p class="text-slate-400 leading-relaxed">Automatically structures your estimates into the 18 standard CSI MasterFormat divisions for immediate professional presentation.</p>
+      </div>
+    </div>
+
+    <!-- Testimonial -->
+    <div class="mt-20">
+      <div class="glass-card rounded-2xl p-8 lg:p-12 relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-transparent"></div>
+        <div class="relative z-10 flex flex-col md:flex-row gap-8 items-center">
+          <div class="flex-shrink-0">
+            <div class="h-20 w-20 rounded-full bg-slate-700 flex items-center justify-center border-2 border-primary/20"><span class="text-2xl font-bold text-white">SC</span></div>
+          </div>
+          <div class="flex-grow">
+            <div class="flex gap-1 text-primary mb-4">
+              <span class="material-symbols-outlined text-xl">star</span><span class="material-symbols-outlined text-xl">star</span><span class="material-symbols-outlined text-xl">star</span><span class="material-symbols-outlined text-xl">star</span><span class="material-symbols-outlined text-xl">star</span>
+            </div>
+            <blockquote class="text-xl font-medium text-white italic mb-4">"SiteScope cut our pre-construction estimation time by 80%. The CSI breakdown accuracy is remarkable."</blockquote>
+            <div class="text-base"><div class="font-semibold text-white">Sarah Chen</div><div class="text-slate-400">VP of Pre-Construction, Turner Construction</div></div>
+          </div>
+        </div>
+        <div class="absolute bottom-4 right-8 opacity-5 pointer-events-none"><span class="material-symbols-outlined text-9xl text-white">format_quote</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works" class="py-24 sm:py-32 bg-background-dark relative border-t border-white/5">
+  <div class="mx-auto max-w-7xl px-6 lg:px-8">
+    <div class="mx-auto max-w-2xl text-center mb-16">
+      <h2 class="text-3xl font-bold tracking-tight text-white sm:text-4xl">From Blueprint to Budget</h2>
+      <p class="mt-4 text-lg text-slate-400">Three simple steps to generate comprehensive cost reports.</p>
+    </div>
+    <div class="relative">
+      <div class="absolute top-[3rem] left-[15%] right-[15%] h-0.5 hidden md:block z-0">
+        <div class="w-full h-full bg-gradient-to-r from-transparent via-primary/40 to-transparent"></div>
+        <div class="absolute top-1/2 left-1/3 w-3 h-3 border-t-2 border-r-2 border-primary/60 transform rotate-45 -translate-y-1/2 bg-background-dark"></div>
+        <div class="absolute top-1/2 right-1/3 w-3 h-3 border-t-2 border-r-2 border-primary/60 transform rotate-45 -translate-y-1/2 bg-background-dark"></div>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-12 relative z-10">
+        <div class="flex flex-col items-center text-center group">
+          <div class="w-24 h-24 rounded-full bg-surface-dark border-2 border-primary/50 flex items-center justify-center text-primary shadow-glow shadow-primary/20 mb-8 relative transition-transform group-hover:scale-110 duration-300">
+            <span class="material-symbols-outlined text-4xl">upload_file</span>
+            <div class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center ring-4 ring-background-dark">1</div>
+          </div>
+          <h3 class="text-xl font-bold text-white">Upload Plans</h3>
+          <p class="mt-3 text-base text-slate-400 px-4">Drag and drop your PDF blueprints or CAD files directly into the secure portal.</p>
+        </div>
+        <div class="flex flex-col items-center text-center group">
+          <div class="w-24 h-24 rounded-full bg-surface-dark border-2 border-primary/50 flex items-center justify-center text-primary shadow-glow shadow-primary/20 mb-8 relative transition-transform group-hover:scale-110 duration-300">
+            <span class="material-symbols-outlined text-4xl">smart_toy</span>
+            <div class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center ring-4 ring-background-dark">2</div>
+          </div>
+          <h3 class="text-xl font-bold text-white">AI Analysis</h3>
+          <p class="mt-3 text-base text-slate-400 px-4">Our dual-AI engine scans line items, calculates quantities, and applies local pricing.</p>
+        </div>
+        <div class="flex flex-col items-center text-center group">
+          <div class="w-24 h-24 rounded-full bg-surface-dark border-2 border-primary/50 flex items-center justify-center text-primary shadow-glow shadow-primary/20 mb-8 relative transition-transform group-hover:scale-110 duration-300">
+            <span class="material-symbols-outlined text-4xl">description</span>
+            <div class="absolute -top-3 -right-3 w-8 h-8 rounded-full bg-primary text-white text-sm font-bold flex items-center justify-center ring-4 ring-background-dark">3</div>
+          </div>
+          <h3 class="text-xl font-bold text-white">Get Report</h3>
+          <p class="mt-3 text-base text-slate-400 px-4">Receive a detailed estimate broken down by CSI division instantly.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="relative isolate overflow-hidden bg-primary/10 py-24 sm:py-32 border-t border-primary/20">
+  <div aria-hidden="true" class="absolute inset-0 -z-10 bg-[radial-gradient(45rem_50rem_at_top,rgba(60,131,246,0.15),#0A0A0A)] opacity-50"></div>
+  <div class="mx-auto max-w-7xl px-6 lg:px-8 text-center">
+    <h2 class="text-3xl font-bold tracking-tight text-white sm:text-5xl">Ready to transform your cost estimation process?</h2>
+    <p class="mx-auto mt-6 max-w-xl text-lg leading-8 text-slate-300">Join top general contractors who are saving 80% of their estimation time with SiteScope.</p>
+    <div class="mt-10 flex items-center justify-center gap-x-6">
+      <button onclick="showView('dashboard')" class="rounded-xl bg-primary px-10 py-4 text-lg font-bold text-white shadow-glow shadow-primary/40 hover:bg-primary/90 transition-all hover:scale-105">Get Started Free</button>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-surface-dark border-t border-white/5">
+  <div class="mx-auto max-w-7xl px-6 pb-8 pt-16 sm:pt-24 lg:px-8 lg:pt-32">
+    <div class="xl:grid xl:grid-cols-3 xl:gap-8">
+      <div class="space-y-8">
+        <div class="flex items-center gap-2"><span class="material-symbols-outlined text-primary text-[28px]">architecture</span><span class="text-xl font-bold text-white">SiteScope</span></div>
+        <p class="text-sm leading-6 text-slate-400">Building the future of construction estimation with artificial intelligence and precision data.</p>
+        <div class="flex space-x-6">
+          <a class="text-slate-400 hover:text-white transition-colors" href="#"><svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path></svg></a>
+          <a class="text-slate-400 hover:text-white transition-colors" href="#"><svg class="h-5 w-5" fill="currentColor" viewBox="0 0 24 24"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"></path></svg></a>
+        </div>
+      </div>
+      <div class="mt-16 grid grid-cols-2 gap-8 xl:col-span-2 xl:mt-0">
+        <div class="md:grid md:grid-cols-2 md:gap-8">
+          <div><h3 class="text-sm font-semibold leading-6 text-white">Solutions</h3><ul class="mt-6 space-y-4"><li><a class="text-sm text-slate-400 hover:text-white" href="#">Commercial</a></li><li><a class="text-sm text-slate-400 hover:text-white" href="#">Residential</a></li><li><a class="text-sm text-slate-400 hover:text-white" href="#">Industrial</a></li><li><a class="text-sm text-slate-400 hover:text-white" href="#">Infrastructure</a></li></ul></div>
+          <div class="mt-10 md:mt-0"><h3 class="text-sm font-semibold leading-6 text-white">Support</h3><ul class="mt-6 space-y-4"><li><a class="text-sm text-slate-400 hover:text-white" href="#">Documentation</a></li><li><a class="text-sm text-slate-400 hover:text-white" href="#">API Reference</a></li><li><a class="text-sm text-slate-400 hover:text-white" href="#">Contact</a></li></ul></div>
+        </div>
+        <div class="md:grid md:grid-cols-2 md:gap-8">
+          <div><h3 class="text-sm font-semibold leading-6 text-white">Company</h3><ul class="mt-6 space-y-4"><li><a class="text-sm text-slate-400 hover:text-white" href="#">About</a></li><li><a class="text-sm text-slate-400 hover:text-white" href="#">Blog</a></li><li><a class="text-sm text-slate-400 hover:text-white" href="#">Careers</a></li></ul></div>
+          <div class="mt-10 md:mt-0"><h3 class="text-sm font-semibold leading-6 text-white">Legal</h3><ul class="mt-6 space-y-4"><li><a class="text-sm text-slate-400 hover:text-white" href="#">Privacy</a></li><li><a class="text-sm text-slate-400 hover:text-white" href="#">Terms</a></li></ul></div>
+        </div>
+      </div>
+    </div>
+    <div class="mt-16 border-t border-white/5 pt-8"><p class="text-xs text-slate-500">&copy; 2026 SiteScope Inc. All rights reserved.</p></div>
+  </div>
+</footer>
+</main>
+
+<!-- ==================== DASHBOARD VIEW ==================== -->
+<main id="view-dashboard" class="view flex-col flex-grow" style="display:none;">
+<div class="flex-1 flex flex-col md:flex-row min-h-[calc(100vh-64px)]">
+  <!-- Left Panel -->
+  <div class="w-full md:w-[40%] min-w-[320px] max-w-[600px] flex flex-col border-r border-border-dark bg-[#111418] overflow-y-auto">
+    <div class="p-6 md:p-8 flex flex-col gap-6">
+      <div class="space-y-1"><h1 class="text-2xl font-bold text-white tracking-tight">Project Details</h1><p class="text-slate-400 text-sm">Enter the specifications for your construction estimate.</p></div>
+      <div class="glass-card rounded-xl p-6 flex flex-col gap-5">
+        <div class="relative group cursor-pointer">
+          <input class="absolute inset-0 w-full h-full opacity-0 z-10 cursor-pointer" type="file" id="fileUpload"/>
+          <div class="border-2 border-dashed border-slate-600 group-hover:border-primary/50 group-hover:bg-primary/5 rounded-xl p-8 flex flex-col items-center justify-center text-center transition-all bg-[#0A0A0A]">
+            <div class="size-12 rounded-full bg-surface-dark border border-border-dark flex items-center justify-center mb-3 group-hover:scale-110 transition-transform"><span class="material-symbols-outlined text-primary text-2xl">cloud_upload</span></div>
+            <p class="text-white font-medium mb-1">Upload Blueprints</p>
+            <p class="text-xs text-slate-400">PDF, PNG, JPG up to 50MB</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 gap-5">
+          <label class="flex flex-col gap-2"><span class="text-slate-300 text-sm font-medium">Project Name</span><input id="projectName" class="w-full bg-[#0A0A0A] border border-border-dark rounded-lg px-4 py-2.5 text-white placeholder:text-slate-600 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm" placeholder="e.g. Riverside Office Complex" type="text"/></label>
+          <div class="grid grid-cols-2 gap-4">
+            <label class="flex flex-col gap-2"><span class="text-slate-300 text-sm font-medium">Sq. Footage</span><div class="relative"><input id="sqFootage" class="w-full bg-[#0A0A0A] border border-border-dark rounded-lg px-4 py-2.5 text-white placeholder:text-slate-600 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm" placeholder="20,000" type="number"/><span class="absolute right-3 top-2.5 text-slate-500 text-xs font-medium">ft²</span></div></label>
+            <label class="flex flex-col gap-2"><span class="text-slate-300 text-sm font-medium">Stories</span><input id="stories" class="w-full bg-[#0A0A0A] border border-border-dark rounded-lg px-4 py-2.5 text-white placeholder:text-slate-600 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm" placeholder="8" type="number"/></label>
+          </div>
+          <div class="grid grid-cols-2 gap-4">
+            <label class="flex flex-col gap-2"><span class="text-slate-300 text-sm font-medium">Location</span><div class="relative"><select id="location" class="w-full bg-[#0A0A0A] border border-border-dark rounded-lg px-4 py-2.5 text-white appearance-none focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm"><option>New York, NY</option><option>Los Angeles, CA</option><option>Chicago, IL</option><option>Houston, TX</option><option>Austin, TX</option><option>Miami, FL</option></select><span class="material-symbols-outlined absolute right-3 top-2.5 text-slate-500 text-lg pointer-events-none">expand_more</span></div></label>
+            <label class="flex flex-col gap-2"><span class="text-slate-300 text-sm font-medium">Building Type</span><div class="relative"><select id="buildingType" class="w-full bg-[#0A0A0A] border border-border-dark rounded-lg px-4 py-2.5 text-white appearance-none focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm"><option>Commercial</option><option>Residential</option><option>Industrial</option><option>Institutional</option><option>Infrastructure</option></select><span class="material-symbols-outlined absolute right-3 top-2.5 text-slate-500 text-lg pointer-events-none">expand_more</span></div></label>
+          </div>
+          <label class="flex flex-col gap-2"><span class="text-slate-300 text-sm font-medium">Description</span><textarea class="w-full bg-[#0A0A0A] border border-border-dark rounded-lg px-4 py-3 text-white placeholder:text-slate-600 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all text-sm min-h-[100px] resize-none" placeholder="Describe your project scope, materials, and any special requirements..."></textarea></label>
+        </div>
+        <div class="mt-2">
+          <button onclick="showView('results')" class="w-full h-12 flex items-center justify-center gap-2 rounded-lg bg-primary text-white font-bold shadow-glow shadow-primary/40 hover:shadow-[0_0_30px_-5px_rgba(60,131,246,0.6)] hover:-translate-y-0.5 transition-all">
+            <span>Generate Estimate</span><span class="material-symbols-outlined text-lg">arrow_forward</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Right Panel -->
+  <div class="hidden md:flex flex-1 bg-[#0A0A0A] relative items-center justify-center p-8 overflow-hidden">
+    <div class="absolute inset-0 opacity-10 pointer-events-none" style="background-image: radial-gradient(#3c83f6 1px, transparent 1px); background-size: 30px 30px;"></div>
+    <div class="max-w-md w-full text-center relative z-10 flex flex-col items-center">
+      <div class="relative w-64 h-64 mb-8">
+        <div class="absolute inset-0 border border-slate-700/50 rounded-full animate-[spin_10s_linear_infinite]"></div>
+        <div class="absolute inset-4 border border-dashed border-slate-700/50 rounded-full animate-[spin_15s_linear_infinite_reverse]"></div>
+        <div class="absolute inset-0 flex items-center justify-center">
+          <div class="size-32 bg-surface-dark/80 backdrop-blur rounded-xl border border-border-dark flex items-center justify-center shadow-2xl relative overflow-hidden">
+            <div class="absolute inset-0 bg-gradient-to-br from-primary/10 to-transparent"></div>
+            <span class="material-symbols-outlined text-6xl text-slate-500">grid_on</span>
+          </div>
+        </div>
+        <div class="absolute top-10 -right-4 bg-surface-dark border border-border-dark p-2 rounded-lg shadow-lg flex items-center gap-2 animate-bounce" style="animation-delay: 0.5s;"><span class="w-2 h-2 rounded-full bg-green-500"></span><div class="h-1.5 w-12 bg-slate-700 rounded-full"></div></div>
+        <div class="absolute bottom-10 -left-4 bg-surface-dark border border-border-dark p-2 rounded-lg shadow-lg flex items-center gap-2 animate-bounce" style="animation-delay: 1s;"><span class="w-2 h-2 rounded-full bg-primary"></span><div class="h-1.5 w-8 bg-slate-700 rounded-full"></div></div>
+      </div>
+      <h3 class="text-2xl font-bold text-white mb-3">Ready to Estimate</h3>
+      <p class="text-slate-400 leading-relaxed max-w-sm mx-auto">Your cost breakdown will appear here. Upload your project documents or fill in the details on the left to get started.</p>
+    </div>
+    <div class="absolute bottom-8 right-8 flex gap-4 text-xs font-mono text-slate-600 opacity-50 select-none"><span>VER: 2.4.0</span><span>SYS: ONLINE</span><span>LAT: 24ms</span></div>
+  </div>
+</div>
+</main>
+
+<!-- ==================== RESULTS VIEW ==================== -->
+<main id="view-results" class="view flex-col flex-grow" style="display:none;">
+<div class="max-w-[1280px] mx-auto w-full px-4 py-8">
+  <!-- Results Header -->
+  <div class="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10 pb-6 border-b border-slate-800">
+    <div class="flex flex-col gap-2">
+      <div class="flex items-center gap-3">
+        <h2 class="text-3xl md:text-4xl font-black tracking-tight">Riverside Office Complex</h2>
+        <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-500 border border-emerald-500/20"><span class="material-symbols-outlined text-[14px]">check_circle</span>High Confidence (92%)</span>
+      </div>
+      <p class="text-slate-400 text-sm">Generated on Mar 1, 2026 &bull; ID: #EST-2026-0301</p>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="flex items-center gap-2 h-10 px-4 rounded-lg bg-slate-800 hover:bg-slate-700 text-white text-sm font-medium transition-colors"><span class="material-symbols-outlined text-[18px]">picture_as_pdf</span>Export PDF</button>
+      <button onclick="showView('dashboard')" class="flex items-center gap-2 h-10 px-4 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 text-sm font-medium transition-colors"><span class="material-symbols-outlined text-[18px]">add</span>New Estimate</button>
+    </div>
+  </div>
+  <!-- Total Cost -->
+  <div class="mb-10 text-center md:text-left">
+    <p class="text-slate-400 font-medium mb-1">Total Estimated Cost</p>
+    <div class="text-5xl md:text-7xl font-black tracking-tight text-white text-glow-blue">$4,850,000</div>
+  </div>
+  <!-- Key Metrics -->
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    <div class="glass-panel p-5 rounded-xl flex flex-col gap-1 hover:border-primary/30 transition-colors group"><div class="flex justify-between items-start"><p class="text-slate-400 text-sm font-medium">Cost per sq ft</p><span class="material-symbols-outlined text-slate-600 group-hover:text-primary transition-colors">square_foot</span></div><p class="text-2xl font-bold text-white">$242 <span class="text-base font-normal text-slate-500">/ sq ft</span></p></div>
+    <div class="glass-panel p-5 rounded-xl flex flex-col gap-1 hover:border-primary/30 transition-colors group"><div class="flex justify-between items-start"><p class="text-slate-400 text-sm font-medium">Building Type</p><span class="material-symbols-outlined text-slate-600 group-hover:text-primary transition-colors">domain</span></div><p class="text-xl font-bold text-white">Commercial Office</p></div>
+    <div class="glass-panel p-5 rounded-xl flex flex-col gap-1 hover:border-primary/30 transition-colors group"><div class="flex justify-between items-start"><p class="text-slate-400 text-sm font-medium">Location Factor</p><span class="material-symbols-outlined text-slate-600 group-hover:text-primary transition-colors">location_on</span></div><p class="text-2xl font-bold text-white">1.15 <span class="text-base font-normal text-slate-500">- NY</span></p></div>
+    <div class="glass-panel p-5 rounded-xl flex flex-col gap-1 hover:border-primary/30 transition-colors group"><div class="flex justify-between items-start"><p class="text-slate-400 text-sm font-medium">Quality Level</p><span class="material-symbols-outlined text-slate-600 group-hover:text-primary transition-colors">hotel_class</span></div><p class="text-xl font-bold text-white">Mid-Range</p></div>
+  </div>
+  <!-- Two-column: CSI Table + Analysis -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="lg:col-span-2 flex flex-col gap-6">
+      <div class="flex items-center justify-between"><h3 class="text-xl font-bold text-white">Cost Breakdown by CSI Division</h3></div>
+      <div class="bg-slate-900 rounded-xl border border-slate-800 overflow-hidden shadow-sm">
+        <div class="grid grid-cols-12 gap-4 px-6 py-3 bg-slate-800/50 border-b border-slate-800 text-xs font-semibold text-slate-500 uppercase tracking-wider"><div class="col-span-1">Div</div><div class="col-span-4">Category</div><div class="col-span-3 text-right">Cost</div><div class="col-span-4 pl-4">% of Total</div></div>
+        <!-- Rows -->
+        <div class="grid grid-cols-12 gap-4 px-6 py-4 items-center border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors relative overflow-hidden"><div class="absolute left-0 top-0 bottom-0 w-[2px] bg-primary shadow-[0_0_10px_rgba(60,131,246,0.5)]"></div><div class="col-span-1 text-slate-400 font-mono text-sm">03</div><div class="col-span-4 text-white font-medium text-sm">Concrete</div><div class="col-span-3 text-right text-white font-bold text-sm">$1,212,500</div><div class="col-span-4 pl-4 flex items-center gap-3"><div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-blue-600 to-blue-400 w-[25%] rounded-full shadow-[0_0_10px_rgba(60,131,246,0.4)]"></div></div><span class="text-xs text-slate-500 w-8 text-right">25%</span></div></div>
+        <div class="grid grid-cols-12 gap-4 px-6 py-4 items-center border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors relative overflow-hidden"><div class="absolute left-0 top-0 bottom-0 w-[2px] bg-primary shadow-[0_0_10px_rgba(60,131,246,0.5)]"></div><div class="col-span-1 text-slate-400 font-mono text-sm">09</div><div class="col-span-4 text-white font-medium text-sm">Finishes</div><div class="col-span-3 text-right text-white font-bold text-sm">$970,000</div><div class="col-span-4 pl-4 flex items-center gap-3"><div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-blue-600 to-blue-400 w-[20%] rounded-full shadow-[0_0_10px_rgba(60,131,246,0.4)]"></div></div><span class="text-xs text-slate-500 w-8 text-right">20%</span></div></div>
+        <div class="grid grid-cols-12 gap-4 px-6 py-4 items-center border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors relative overflow-hidden"><div class="absolute left-0 top-0 bottom-0 w-[2px] bg-primary shadow-[0_0_10px_rgba(60,131,246,0.5)]"></div><div class="col-span-1 text-slate-400 font-mono text-sm">05</div><div class="col-span-4 text-white font-medium text-sm">Metals</div><div class="col-span-3 text-right text-white font-bold text-sm">$727,500</div><div class="col-span-4 pl-4 flex items-center gap-3"><div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-gradient-to-r from-blue-600 to-blue-400 w-[15%] rounded-full shadow-[0_0_10px_rgba(60,131,246,0.4)]"></div></div><span class="text-xs text-slate-500 w-8 text-right">15%</span></div></div>
+        <div class="grid grid-cols-12 gap-4 px-6 py-4 items-center border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"><div class="col-span-1 text-slate-400 font-mono text-sm">26</div><div class="col-span-4 text-white font-medium text-sm">Electrical</div><div class="col-span-3 text-right text-white font-medium text-sm">$485,000</div><div class="col-span-4 pl-4 flex items-center gap-3"><div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-slate-500 w-[10%] rounded-full"></div></div><span class="text-xs text-slate-500 w-8 text-right">10%</span></div></div>
+        <div class="grid grid-cols-12 gap-4 px-6 py-4 items-center border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"><div class="col-span-1 text-slate-400 font-mono text-sm">23</div><div class="col-span-4 text-white font-medium text-sm">HVAC</div><div class="col-span-3 text-right text-white font-medium text-sm">$388,000</div><div class="col-span-4 pl-4 flex items-center gap-3"><div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-slate-500 w-[8%] rounded-full"></div></div><span class="text-xs text-slate-500 w-8 text-right">8%</span></div></div>
+        <div class="grid grid-cols-12 gap-4 px-6 py-4 items-center border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"><div class="col-span-1 text-slate-400 font-mono text-sm">31</div><div class="col-span-4 text-white font-medium text-sm">Earthwork</div><div class="col-span-3 text-right text-white font-medium text-sm">$291,000</div><div class="col-span-4 pl-4 flex items-center gap-3"><div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-slate-500 w-[6%] rounded-full"></div></div><span class="text-xs text-slate-500 w-8 text-right">6%</span></div></div>
+        <div class="grid grid-cols-12 gap-4 px-6 py-4 items-center border-b border-slate-800/50 hover:bg-slate-800/30 transition-colors"><div class="col-span-1 text-slate-400 font-mono text-sm">15</div><div class="col-span-4 text-white font-medium text-sm">Plumbing</div><div class="col-span-3 text-right text-white font-medium text-sm">$242,500</div><div class="col-span-4 pl-4 flex items-center gap-3"><div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-slate-500 w-[5%] rounded-full"></div></div><span class="text-xs text-slate-500 w-8 text-right">5%</span></div></div>
+        <div class="grid grid-cols-12 gap-4 px-6 py-4 items-center hover:bg-slate-800/30 transition-colors"><div class="col-span-1 text-slate-400 font-mono text-sm">--</div><div class="col-span-4 text-slate-400 text-sm italic">Remaining Divisions</div><div class="col-span-3 text-right text-slate-400 text-sm">$533,500</div><div class="col-span-4 pl-4 flex items-center gap-3"><div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden"><div class="h-full bg-slate-600 w-[11%] rounded-full"></div></div><span class="text-xs text-slate-500 w-8 text-right">11%</span></div></div>
+      </div>
+    </div>
+    <!-- Analysis Side Panel -->
+    <div class="lg:col-span-1 flex flex-col gap-6">
+      <h3 class="text-xl font-bold text-white">Analysis Details</h3>
+      <div class="bg-slate-900 rounded-xl border border-slate-800 p-6 flex flex-col gap-6 shadow-sm">
+        <div><h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-4">Technical Specs</h4>
+          <div class="grid grid-cols-2 gap-4">
+            <div class="flex flex-col gap-1 p-3 rounded-lg bg-slate-800/50"><span class="text-xs text-slate-500">Structure</span><span class="text-sm font-semibold text-white">Steel Frame</span></div>
+            <div class="flex flex-col gap-1 p-3 rounded-lg bg-slate-800/50"><span class="text-xs text-slate-500">Height</span><span class="text-sm font-semibold text-white">8 Stories</span></div>
+            <div class="flex flex-col gap-1 p-3 rounded-lg bg-slate-800/50"><span class="text-xs text-slate-500">Total Area</span><span class="text-sm font-semibold text-white">20,000 sq ft</span></div>
+            <div class="flex flex-col gap-1 p-3 rounded-lg bg-slate-800/50"><span class="text-xs text-slate-500">Usage</span><span class="text-sm font-semibold text-white">Office Tower</span></div>
+          </div>
+        </div>
+        <div><h4 class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">Detected Materials</h4>
+          <div class="flex flex-wrap gap-2">
+            <span class="px-3 py-1.5 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-medium">Structural Steel</span>
+            <span class="px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium">Glass Curtain Wall</span>
+            <span class="px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium">Reinforced Concrete</span>
+            <span class="px-3 py-1.5 rounded-full bg-slate-800 border border-slate-700 text-slate-300 text-xs font-medium">Aluminium Panels</span>
+          </div>
+        </div>
+        <div class="pt-4 border-t border-slate-800 mt-2">
+          <button onclick="showView('dashboard')" class="w-full py-2.5 rounded-lg border border-slate-700 hover:bg-slate-800 text-slate-300 text-sm font-medium transition-colors flex items-center justify-center gap-2"><span class="material-symbols-outlined text-sm">edit_document</span>Edit Parameters</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</main>
+
+</div>
+
+<script>
+function showView(viewName) {
+  document.querySelectorAll('.view').forEach(v => { v.classList.remove('active'); v.style.display = 'none'; });
+  const target = document.getElementById('view-' + viewName);
+  if (target) { target.classList.add('active'); target.style.display = 'flex'; }
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
